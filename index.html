@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vanta.js WAVES 背景示範</title>
+    <style>
+      /* 讓整個畫面被 Vanta 背景覆蓋 */
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+      }
+
+      #vanta-bg {
+        position: fixed;
+        inset: 0;
+      }
+
+      /* 放在 Vanta 背景上層的內容 */
+      .content {
+        position: relative;
+        z-index: 1;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+      }
+
+      .content h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .content p {
+        font-size: 1.2rem;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Vanta 會在這個元素裡面建立 WebGL / Canvas 特效 -->
+    <div id="vanta-bg"></div>
+
+    <!-- 你的網頁內容 -->
+    <div class="content">
+      <h1>Vanta.js WAVES Demo</h1>
+      <p>這是使用 Vanta.js 製作的動態波浪背景。</p>
+      <div
+        style="
+          margin-top: 1.5rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        "
+      >
+        <label for="wave-color">選擇波浪顏色：</label>
+        <input id="wave-color" type="color" value="#1e90ff" />
+      </div>
+    </div>
+
+    <!-- three.js & vanta.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanta/0.5.24/vanta.waves.min.js"></script>
+
+    <script>
+      let vantaEffect;
+
+      document.addEventListener("DOMContentLoaded", function () {
+        vantaEffect = VANTA.WAVES({
+          el: "#vanta-bg",
+          mouseControls: true,
+          touchControls: true,
+          gyroControls: false,
+          minHeight: 200.0,
+          minWidth: 200.0,
+          scale: 1.0,
+          scaleMobile: 1.0,
+          // 顏色與外觀可以依喜好調整
+          color: 0x1e90ff, // 波浪顏色
+          shininess: 50.0,
+          waveHeight: 20.0,
+          waveSpeed: 0.8,
+          zoom: 1.0,
+        });
+
+        const colorInput = document.getElementById("wave-color");
+        if (colorInput) {
+          colorInput.addEventListener("input", function (e) {
+            const hex = e.target.value;
+            // 將 #RRGGBB 轉成 0xRRGGBB 整數
+            const colorValue = parseInt(hex.replace("#", "0x"));
+            if (vantaEffect && !Number.isNaN(colorValue)) {
+              vantaEffect.setOptions({ color: colorValue });
+            }
+          });
+        }
+      });
+
+      // 可選：如果這頁會被 SPA 卸載，可以記得銷毀
+      window.addEventListener("beforeunload", function () {
+        if (vantaEffect) vantaEffect.destroy();
+      });
+    </script>
+  </body>
+</html>
